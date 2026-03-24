@@ -3,46 +3,36 @@
 Implémentation from scratch d'un modèle YOLO avec backbone ResNet50 pré-entraîné,
 Neck FPN/PAN custom et Detection Head custom, entraîné sur le dataset KITTI.
 
-**mAP50 = 0.60** sur le val set KITTI (8 classes).
+**mAP@50 = 0.597 | mAP@50:95 = 0.310 | FPS = 102**
 
 ---
 
-## 🚀 Installation et lancement rapide
+## 🚀 Lancement rapide
 
 ```bash
-# 1. Cloner le repo
-git clone https://github.com/akramaici/yolo_kitti
-cd yolo_kitti
-
-# 2. Installer les dépendances
+git clone https://github.com/akramaici/projet-pfe
+cd projet-pfe
 pip install -r requirements.txt
-
-# 3. Configurer les credentials Kaggle (une seule fois)
-#    → Va sur https://www.kaggle.com/settings → API → Create New Token
-#    → Place le fichier kaggle.json dans ~/.kaggle/kaggle.json
-
-# 4. Lancer le pipeline complet (téléchargement + nettoyage + entraînement + évaluation)
+# Placer kaggle.json dans ~/.kaggle/
 python main.py
 ```
 
-C'est tout. Le pipeline est entièrement automatique.
-
 ---
 
-## 📁 Structure du projet
+## 📁 Structure
 
 ```
-yolo_kitti/
-├── main.py                   # ← Point d'entrée unique
+projet-pfe/
+├── main.py                   # Point d'entrée unique
 ├── config.py                 # Hyperparamètres centralisés
 ├── requirements.txt
 ├── src/
 │   ├── download.py           # Téléchargement Kaggle automatique
 │   ├── preprocess.py         # Nettoyage dataset
-│   ├── dataset.py            # YOLODataset + letterbox
+│   ├── dataset.py            # YOLODataset + augmentation
 │   ├── model.py              # CustomYOLO + YOLOLossV2
 │   ├── train.py              # Entraînement 2 phases
-│   ├── evaluate.py           # mAP50 + visualisation
+│   ├── evaluate.py           # mAP, latence, throughput, confusion
 │   └── inference.py          # Inférence image/vidéo
 ├── data/                     # Dataset (généré automatiquement)
 ├── checkpoints/              # Modèles sauvegardés
@@ -51,47 +41,15 @@ yolo_kitti/
 
 ---
 
-## ⚙️ Options du pipeline
+## ⚙️ Options
 
 ```bash
-# Pipeline complet (défaut)
-python main.py
-
-# Ignorer le téléchargement si dataset déjà présent
-python main.py --skip-download
-
-# Ignorer l'entraînement — évaluation seulement
-python main.py --skip-train --checkpoint checkpoints/best_phase2.pth
-
-# Avec exploration du dataset
-python main.py --explore
-
-# Inférence sur une image
-python main.py --skip-train --image ma_photo.jpg
-
-# Inférence sur une vidéo
-python main.py --skip-train --video ma_video.mp4
-```
-
----
-
-## 🔑 Configuration Kaggle
-
-### Option 1 — fichier kaggle.json (recommandé)
-```bash
-# Linux/Mac
-mkdir -p ~/.kaggle
-cp kaggle.json ~/.kaggle/kaggle.json
-chmod 600 ~/.kaggle/kaggle.json
-
-# Windows
-# Placer kaggle.json dans C:\Users\TON_NOM\.kaggle\kaggle.json
-```
-
-### Option 2 — Variables d'environnement
-```bash
-export KAGGLE_USERNAME=ton_username
-export KAGGLE_KEY=ta_cle_api
+python main.py                                    # pipeline complet
+python main.py --skip-download                    # dataset déjà présent
+python main.py --skip-train --checkpoint path.pth # évaluation seulement
+python main.py --skip-train --image photo.jpg     # inférence image
+python main.py --skip-train --video video.mp4     # inférence vidéo
+python main.py --explore                          # graphiques dataset
 ```
 
 ---
@@ -104,18 +62,42 @@ export KAGGLE_KEY=ta_cle_api
 | Neck | FPN + PAN custom |
 | Head | Detection Head 3 échelles |
 | Loss | Focal BCE + MSE (YOLOLossV2) |
+| Anchors | K-means sur KITTI |
 | Paramètres | 28M |
+
+---
 
 ## 📊 Résultats
 
-| Classe | AP |
-|--------|----|
-| car | 0.74 |
-| van | 0.68 |
-| truck | 0.74 |
-| pedestrian | 0.47 |
-| Person_sitting | 0.42 |
-| cyclist | 0.47 |
-| tram | 0.77 |
-| misc | 0.53 |
-| **mAP50** | **0.60** |
+| Métrique | Valeur |
+|----------|--------|
+| mAP@50 | **0.597** |
+| mAP@50:95 | 0.310 |
+| Recall@100 | 0.407 |
+| Latence (1 img) | 10 ms |
+| FPS | 102 img/s |
+| Throughput max | 412 img/s (batch=64) |
+
+| Classe | AP@50 |
+|--------|-------|
+| car | 0.442 |
+| van | 0.401 |
+| truck | 0.490 |
+| pedestrian | 0.182 |
+| Person_sitting | 0.135 |
+| cyclist | 0.233 |
+| tram | 0.340 |
+| misc | 0.260 |
+
+---
+
+## 🔑 Configuration Kaggle
+
+```bash
+# Linux/Mac
+mkdir -p ~/.kaggle && cp kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
+
+# Ou variables d'environnement
+export KAGGLE_USERNAME=ton_username
+export KAGGLE_KEY=ta_cle_api
+```

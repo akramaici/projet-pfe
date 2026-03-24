@@ -1,34 +1,34 @@
 # ══════════════════════════════════════════════════════════════
-# config.py — Tous les hyperparamètres centralisés
+# config.py — Hyperparamètres centralisés
 # ══════════════════════════════════════════════════════════════
 
 from pathlib import Path
 
-# ── Kaggle dataset
-KAGGLE_DATASET   = "akramaici/kitty-data"   # username/dataset-name
-KAGGLE_DATA_DIR  = "RAW_DATASET"            # dossier extrait depuis Kaggle
+# ── Kaggle
+KAGGLE_DATASET = "akramaici/kitty-data"
+KAGGLE_DATA_DIR = "RAW_DATASET"
 
-# ── Chemins locaux
-DATA_DIR         = Path("data")
-RAW_DATASET      = DATA_DIR / "RAW_DATASET"
-CLEAN_DATASET    = DATA_DIR / "dataset_clean"
-CHECKPOINT_DIR   = Path("checkpoints")
-OUTPUTS_DIR      = Path("outputs")
+# ── Chemins
+DATA_DIR       = Path("data")
+RAW_DATASET    = DATA_DIR / "RAW_DATASET"
+CLEAN_DATASET  = DATA_DIR / "dataset_clean"
+CHECKPOINT_DIR = Path("checkpoints")
+OUTPUTS_DIR    = Path("outputs")
 
 # ── Modèle
-IMG_SIZE         = 640
-BASE_CHANNELS    = 128
+IMG_SIZE      = 640
+BASE_CHANNELS = 128
 
-# ── Anchors KITTI (calculées par k-means)
+# ── Anchors K-means KITTI
 ANCHORS_NORM = [
-    [(0.020, 0.060), (0.040, 0.090), (0.030, 0.180)],
-    [(0.080, 0.150), (0.060, 0.350), (0.150, 0.250)],
-    [(0.200, 0.400), (0.350, 0.500), (0.500, 0.800)],
+    [(0.034, 0.077), (0.058, 0.140), (0.058, 0.260)],
+    [(0.121, 0.197), (0.082, 0.429), (0.178, 0.320)],
+    [(0.143, 0.592), (0.262, 0.476), (0.269, 0.922)],
 ]
 
 # ── Entraînement
-BATCH_SIZE   = 16
-NUM_WORKERS  = 4
+BATCH_SIZE  = 16
+NUM_WORKERS = 4
 
 PHASE1_EPOCHS   = 20
 PHASE1_LR       = 5e-4
@@ -45,11 +45,11 @@ LAMBDA_CLS   = 0.5
 LAMBDA_NOOBJ = 0.05
 
 # ── Inférence
-CONF_THRESH  = 0.5
-NMS_THRESH   = 0.20
+CONF_THRESH = 0.5
+NMS_THRESH  = 0.35
 
 # ── Nettoyage
-MIN_AREA     = 0.0005
+MIN_AREA = 0.0005
 
 # ── Classes KITTI
 CLASS_NAMES = {
